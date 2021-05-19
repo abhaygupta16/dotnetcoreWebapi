@@ -14,6 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Newtonsoft.Json.Serialization;
+using Microsoft.OpenApi.Models;
 
 namespace Commander
 {
@@ -38,6 +39,14 @@ namespace Commander
                 s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             });
 
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo {
+                    Title="CommanderApi",
+                    Version="v1"
+                });
+            });
+
             services.AddScoped<ICommanderRepo, SqlCommanderRepo>();
             //services.AddScoped<ICommanderRepo, MockCommanderRepo>();
         }
@@ -49,6 +58,13 @@ namespace Commander
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI( c => {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json","Commander API V1");
+
+                c.RoutePrefix = string.Empty;
+            });
 
             app.UseHttpsRedirection();
 
